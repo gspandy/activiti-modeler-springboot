@@ -1,1 +1,2 @@
 # activiti-modeler-springboot
+本项目使用springboot测试activiti-explorer中的模型编辑页面,模型编辑页面使用angularjs相对Vaadin简单,其他页面可以自己完成,后续还有完善,特此说明,这项目的确简单,只是供本人用来学习的,若大神看到勿喷哈!
