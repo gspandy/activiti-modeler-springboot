@@ -30,6 +30,7 @@ import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -78,11 +79,17 @@ public class ModelController implements ModelDataJsonConstants {
 		return list;
 	}
 
-	/** 获取图片 */
+	/**
+	 * 获取图片
+	 * 
+	 * @throws IOException
+	 */
 	@RequestMapping("/getImage")
-	public void getImage(String modelId, HttpServletResponse response) {
+	public void getImage(String modelId, HttpServletResponse response) throws IOException {
 		StreamSource streamSource = null;
 		final byte[] editorSourceExtra = repositoryService.getModelEditorSourceExtra(modelId);
+		// final byte[] editorSource =
+		// repositoryService.getModelEditorSource(modelId);
 		if (editorSourceExtra != null) {
 			streamSource = new StreamSource() {
 				private static final long serialVersionUID = 1L;
@@ -127,7 +134,7 @@ public class ModelController implements ModelDataJsonConstants {
 	/**
 	 * 创建模型
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	public void create(@RequestParam("name") String name, @RequestParam("key") String key,
 			@RequestParam(value = "description", required = false) String description, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -163,9 +170,7 @@ public class ModelController implements ModelDataJsonConstants {
 	@RequestMapping(value = "/{modelId}/json", method = RequestMethod.GET, produces = "application/json")
 	public ObjectNode getEditorJson(@PathVariable String modelId) {
 		ObjectNode modelNode = null;
-
 		Model model = repositoryService.getModel(modelId);
-
 		if (model != null) {
 			try {
 				if (StringUtils.isNotEmpty(model.getMetaInfo())) {
@@ -260,4 +265,6 @@ public class ModelController implements ModelDataJsonConstants {
 			LOGGER.error("导出model的xml文件失败：modelId={}", modelId, e);
 		}
 	}
+
+	
 }

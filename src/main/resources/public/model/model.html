@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="../bootstrap/bootstrap-theme.css" />
+<link rel="stylesheet" href="../bootstrap/bootstrap.min.css" />
+<script type="text/javascript" src="../bootstrap/jquery.js"></script>
+<script type="text/javascript" src="../bootstrap/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-4 col-md-offset-4">
+					<h1>流程模型管理</h1>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="col-md-3">
+				<div class="row">
+					<h3>所有流程模型</h3>
+				</div>
+				<div class="row">
+					<div class="col-md-12" id="root"></div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="row" style="padding-top: 12px;">
+					<button class="btn btn-primary" data-toggle="modal"
+						data-target=".myModal">新增</button>
+					<button onclick="edit()" class="btn btn-primary">编辑</button>
+					<button onclick="deploy()" class="btn btn-primary">部署</button>
+					<button onclick="deleteModel()" class="btn btn-primary">删除</button>
+				</div>
+				<div class="row">
+					<div class="col-md-9" id="image"></div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- 增加模态框 -->
+	<div class="modal fade myModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">增加模型</h4>
+				</div>
+				<form class="form-horizontal" id="myForm" action="/model/create" method="post">
+					<div class="form-group">
+						<label for="name" class="col-sm-2 control-label">模型名字</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="name" name="name"
+								placeholder="name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="key" class="col-sm-2 control-label">模型key</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="key" name="key"
+								placeholder="key">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="description" class="col-sm-2 control-label">模型名字</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="description"
+								name="description" placeholder="模型描述">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-primary" onclick="add()">提交</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+var modelId;
+function edit(){
+	window.location.href='/modeler.html?modelId='+modelId;
+}
+function deploy(){
+	$.get("/deploy/deploy?modelId="+modelId,null,function(data){
+		var str="";
+		console.log(data);
+	})
+}
+function deleteModel(){
+	$.get("/model/delete/"+modelId,null,function(result){
+		alert(result);
+		getAllModel();
+	})
+}
+	$(function() {
+		getAllModel();
+	});
+	function getAllModel() {
+		$.get("/model/list",null,function(data){
+		$("#root").empty();
+		$("#image").empty();
+			console.log(data);
+			var str="";
+			data.map((item)=>{
+				str+="<div class='row'><a href='#' onclick='getOne("+item.id+")'>"+item.name+"</a></div>";
+			});
+			$("#root").append(str);
+		})
+	}
+	function getOne(id){
+		modelId=id;
+		//$.get("/model/getImage?modelId="+id,null,function(data){
+			$("#image").empty();
+			var str="<img src=/model/getImage?modelId="+id+" ></img>";
+			$("#image").append(str);
+		//})
+	}
+</script>
+</html>
