@@ -1,11 +1,12 @@
 package com.activiti.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
-
-
 import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.RepositoryService;
@@ -29,6 +30,9 @@ public class DeployController implements ModelDataJsonConstants {
 
 	@Autowired
 	private RepositoryService repositoryService;
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	/**
 	 * 根据model id部署
 	 */
@@ -54,18 +58,17 @@ public class DeployController implements ModelDataJsonConstants {
 
 	@RequestMapping("/list")
 	public Object getDeploy() {
-		List<Deployment> list = this.repositoryService.createDeploymentQuery().list();
-		for (Deployment d : list) {
-			System.out.println(d.getId() + "===============");
-			System.out.println(d.getName());
-			System.out.println(d.getDeploymentTime());
-		}
 		List<ProcessDefinition> list2 = this.repositoryService.createProcessDefinitionQuery().list();
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
 		list2.forEach(m -> {
-			System.out.println(m.getId());
-			System.out.println(m.getDeploymentId());
-			System.out.println(m.getKey());
+			sb.append("{id:" + m.getId() + ",deploymentId:" + m.getDeploymentId())
+					.append(",key:" + m.getKey() + ",name:" + m.getName())
+					.append(",resourceName:" + m.getResourceName())//
+					.append(",diagramResourceName:" + m.getDiagramResourceName());
+			sb.append("}");
 		});
-		return list2;
+		sb.append("]");
+		return sb.toString();
 	}
 }
