@@ -19,6 +19,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vaadin.terminal.StreamResource.StreamSource;
 
 @RestController
 @RequestMapping("/deploy")
@@ -92,8 +94,6 @@ public class DeployController implements ModelDataJsonConstants {
 	@RequestMapping("/showDeploySource")
 	public Object showDeploySource(String deploymentId, String resourceName, HttpServletResponse response) {
 		InputStream is = this.repositoryService.getResourceAsStream(deploymentId, resourceName);
-		String ss = "slkdfjlaskdfj";
-		ByteArrayInputStream bai = new ByteArrayInputStream(ss.getBytes());
 		Reader reader = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(reader);// 缓冲流
 		String str = null;
@@ -109,6 +109,20 @@ public class DeployController implements ModelDataJsonConstants {
 			e1.printStackTrace();
 		}
 		return sb.toString();
+	}
+
+	@RequestMapping("/showDeploySourceByProcess")
+	public Object showDeploySourceByProcess(String pdid, String resourceName, HttpServletResponse response)
+			throws Exception {
+		ProcessDefinition pd = this.repositoryService.createProcessDefinitionQuery().processDefinitionId(pdid)
+				.singleResult();
+		InputStream is = this.repositoryService.getResourceAsStream(pd.getDeploymentId(), resourceName);
+		byte[] buffer = new byte[1024];
+		int len = -1;
+		while ((len = is.read(buffer, 0, 1024)) != -1) {
+			response.getOutputStream().write(buffer, 0, len);
+		}
+		return null;
 	}
 
 	@RequestMapping("/showImage")

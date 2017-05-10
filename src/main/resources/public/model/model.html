@@ -18,6 +18,13 @@
 					<h1>流程模型管理</h1>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-2" style="float:right;">
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-primary btn-lg"
+						onclick="jump()">进入流程定义</button>
+				</div>
+			</div>
 		</div>
 		<div class="container">
 			<div class="col-md-3">
@@ -35,6 +42,7 @@
 					<button onclick="edit()" class="btn btn-primary">编辑</button>
 					<button onclick="deploy()" class="btn btn-primary">部署</button>
 					<button onclick="deleteModel()" class="btn btn-primary">删除</button>
+					<button onclick="exportModel()" class="btn btn-primary">导出xml</button>
 				</div>
 				<div class="row">
 					<div class="col-md-9" id="image"></div>
@@ -43,6 +51,7 @@
 
 		</div>
 	</div>
+
 	<!-- 增加模态框 -->
 	<div class="modal fade myModal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
@@ -54,7 +63,8 @@
 					</button>
 					<h4 class="modal-title">增加模型</h4>
 				</div>
-				<form class="form-horizontal" id="myForm" action="/model/create" method="post">
+				<form class="form-horizontal" id="myForm" action="/model/create"
+					method="post">
 					<div class="form-group">
 						<label for="name" class="col-sm-2 control-label">模型名字</label>
 						<div class="col-sm-10">
@@ -125,6 +135,15 @@ function deleteModel(){
 			var str="<img src=/model/getImage?modelId="+id+" ></img>";
 			$("#image").append(str);
 		//})
+	}
+	function exportModel(){
+		$.get("/model/export?modelId="+modelId,null,function(data){
+			
+		
+		})
+	}
+	function jump(){
+		window.location.href="/process/processes.html";
 	}
 </script>
 </html>

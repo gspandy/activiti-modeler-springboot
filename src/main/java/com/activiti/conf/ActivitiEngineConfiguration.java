@@ -40,7 +40,7 @@ public class ActivitiEngineConfiguration {
 	protected DataSource dataSource;
 	@Autowired
 	protected PlatformTransactionManager transactionManager;
-	
+
 	@Bean(name = "processEngineFactoryBean")
 	public ProcessEngineFactoryBean processEngineFactoryBean() {
 		ProcessEngineFactoryBean factoryBean = new ProcessEngineFactoryBean();
@@ -74,6 +74,9 @@ public class ActivitiEngineConfiguration {
 		processEngineConfiguration.setAsyncExecutorActivate(
 				Boolean.valueOf(environment.getProperty("engine.asyncexecutor.activate", "true")));
 		processEngineConfiguration.setHistory(environment.getProperty("engine.history.level", "full"));
+		//支持中文图片
+		processEngineConfiguration.setActivityFontName("微软雅黑");
+		processEngineConfiguration.setLabelFontName("微软雅黑");
 
 		String mailEnabled = environment.getProperty("engine.email.enabled");
 		if ("true".equals(mailEnabled)) {
