@@ -55,8 +55,8 @@ public class ActivitiApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		String[] names = applicationContext.getBeanDefinitionNames();
-		Stream.of(names).forEach(m->{
-			System.out.println(m+"==============================");
+		Stream.of(names).forEach(m -> {
+			System.out.println(m + "==============================");
 		});
 	}
 
