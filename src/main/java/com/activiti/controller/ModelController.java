@@ -20,7 +20,6 @@ import org.activiti.engine.repository.Model;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,9 +189,7 @@ public class ModelController implements ModelDataJsonConstants {
 			modelJson.put(MODEL_DESCRIPTION, values.getFirst("description"));
 			model.setMetaInfo(modelJson.toString());
 			model.setName(values.getFirst("name"));
-
 			repositoryService.saveModel(model);
-
 			repositoryService.addModelEditorSource(model.getId(), values.getFirst("json_xml").getBytes("utf-8"));
 
 			InputStream svgStream = new ByteArrayInputStream(values.getFirst("svg_xml").getBytes("utf-8"));
@@ -239,10 +236,17 @@ public class ModelController implements ModelDataJsonConstants {
 			byte[] bpmnBytes = xmlConverter.convertToXML(bpmnModel);
 
 			ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
-			IOUtils.copy(in, response.getOutputStream());
+			// IOUtils.copy(in, response.getOutputStream());
+			OutputStream os = response.getOutputStream();
 			String filename = bpmnModel.getMainProcess().getId() + ".bpmn20.xml";
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+			int temp = -1;
+			while ((temp = in.read()) != -1) {
+				os.write(temp);
+			}
 			response.flushBuffer();
+			in.close();
+			os.close();
 		} catch (Exception e) {
 			LOGGER.error("导出model的xml文件失败：modelId={}", modelId, e);
 		}

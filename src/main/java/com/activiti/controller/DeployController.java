@@ -83,7 +83,7 @@ public class DeployController implements ModelDataJsonConstants {
 		} else if (name.endsWith(".xml")) {
 			deploymentBuilder.name(name).addInputStream(name, file.getInputStream()).deploy();
 		}
-		return "redirect:/process/processes.html";
+		return "redirect:/home.html";
 	}
 
 	@RequestMapping("/list")

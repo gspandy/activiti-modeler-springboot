@@ -48,7 +48,7 @@ public class ProcessController implements ModelDataJsonConstants {
 		identityService.setAuthenticatedUserId(user.getUserId());
 		ProcessInstance processInstance = formService.submitStartFormData(processDefinitionId, map);
 		System.out.println(processInstance.getId()+"====processInstance.getId=========");
-		return "redirect:/process/processes.html";
+		return "redirect:/home.html";
 	}
 
 	/**
@@ -64,7 +64,8 @@ public class ProcessController implements ModelDataJsonConstants {
 		for (int i = 0; i < list.size(); i++) {
 			FormProperty m = list.get(i);
 			sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
-					.append("\",\"value\":\"" + m.getValue());
+					.append("\",\"value\":\"" + m.getValue())
+					.append("\",\"type\":\"" + m.getType().getName());
 			sb.append("\"}");
 			if (i < list.size() - 1) {
 				sb.append(",");

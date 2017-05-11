@@ -32,9 +32,19 @@ public class LoginController implements ModelDataJsonConstants {
 				if (user2 == null) {
 					session.setAttribute("user", user);
 				}
-				return "redirect:/process/processes.html";
+				return "redirect:/home.html";
 			}
 		}
+		return "redirect:/index.html";
+	}
+
+	/**
+	 * 根据model id部署
+	 */
+	@RequestMapping(value = "/logout")
+	public Object logout(HttpSession session) {
+		session.setMaxInactiveInterval(0);
+		session.invalidate();
 		return "redirect:/index.html";
 	}
 }

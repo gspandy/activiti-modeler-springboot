@@ -2,13 +2,6 @@
 <html>
 <head>
 <meta charset="utf-8">
-<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="../bootstrap/bootstrap-theme.css" />
-<link rel="stylesheet" href="../bootstrap/bootstrap.min.css" />
-<script type="text/javascript" src="../bootstrap/jquery.js"></script>
-<script type="text/javascript" src="../bootstrap/bootstrap.min.js"></script>
-
-
 </head>
 <body>
 	<div class="container-fluid">
@@ -18,16 +11,10 @@
 					<h1>任务管理</h1>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-2" style="float: right;">
-					<button type="button" class="btn btn-primary btn-lg"
-						onclick="jump()">进入模型</button>
-				</div>
-			</div>
 		</div>
 		<div class="container">
 			<table class="table table-striped table-bordered">
-				<thead id="root">
+				<thead id="taskroot">
 					<tr>
 						<td>任务ID</td>
 						<td>任务名称</td>
@@ -38,10 +25,14 @@
 					</tr>
 				</thead>
 			</table>
+			<div>
+				<input size="16" type="text" id="datetimeStart" readonly
+					class="form_datetime">
+			</div>
 		</div>
 	</div>
 	<!-- 增加模态框 -->
-	<div class="modal fade myModal2" tabindex="-1" role="dialog">
+	<div class="modal fade taskForm" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -49,9 +40,9 @@
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title">流程动态表单</h4>
+					<h4 class="modal-title">任务信息</h4>
 				</div>
-				<form class="form-horizontal" id="myForm" action="/process/start"
+				<form class="form-horizontal" id="taskForm" action="/process/start"
 					method="post"></form>
 
 			</div>
@@ -59,51 +50,51 @@
 	</div>
 	<script type="text/javascript">
 	$(function() {
-		getAllModel();
+		getAllTask();
+		
 	});
-	function getAllModel() {
-		$.get("/deploy/list", null, function(data) {
+	function getAllTask() {
+		$.get("/task/getAllTask", null, function(data) {
 			data = JSON.parse(data);
 			//$("#root").empty();
+			console.log(data)
 			var str;
 			data.map((item)=>{
-				str+='<tr> <td>'+item.id+'</td><td>'+item.deploymentId+'</td> <td>'+item.name+'</td> <td>'+item.key+'</td> <td>'+item.version+'</td> <td><a target="_blank" href= "/deploy/showDeploySourceByProcess?pdid='+item.id+'&resourceName='+item.resourceName+'">'+item.resourceName+'</a></td> <td><a href= "#" onclick="showImage(\''+item.deploymentId+'\',\''+item.diagramResourceName+'\')">'+item.diagramResourceName+'</a></td> <td><button onclick="deleteDeployment('+item.deploymentId+')" class="btn btn-primary">删除</button>&nbsp;<button onclick="getForm(\''+item.id+'\')" class="btn btn-primary">启动</button></td> </tr>'
+				str+='<tr> <td>'+item.id+'</td><td>'+item.name+'</td> <td>'+item.processInstanceId+'</td> <td>'+item.createTime+'</td> <td>'+item.assignee+'</td><td><button onclick="getTaskForm(\''+item.id+'\')" class="btn btn-primary">办理</button></td></tr>';
 			});
-			$("#root").append(str);
+			$("#taskroot").append(str);
 		})
 	}
 	
-	function showImage(deploymentId,diagramResourceName){
-		$("#image").empty();
-		var str="<img src=/deploy/showImage?deploymentId="+deploymentId+"&diagramResourceName="+diagramResourceName+" ></img>";
-			$("#image").append(str);
-			$("#myModal").modal();
-		}
-	function deleteDeployment(deploymentId){
-		alert(1)
-		$.get("/deploy/delete/"+deploymentId,null,function(result){
-			getAllModel();
-		})
-	}
+// 	function deployTask(id){
+		
+// 	}
+	
 	//获取表单数据
-	function getForm(processDefinitionId){
-		$.get("/process/getForm?processDefinitionId="+processDefinitionId,null,function(result){
+	function getTaskForm(taskId){
+		$.get("/task/getForm?taskId="+taskId,null,function(result){
 			result=JSON.parse(result);
-			console.log(result);
 			var str='';
 			result.map((item)=>{
-				str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" class="form-control" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
+				var dateFormat="dateFormat";
+				if(item.type!="date"){
+					dateFormat="nodateFormat";
+				}
+				str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text"  class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
 			})
-			str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
-			str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
-				$("#myForm").empty();
-			$("#myForm").append(str);
-			$(".myModal2").modal();
+			str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+taskId+'\")" >启动</button> </div>';
+			$("#taskForm").empty();
+			$("#taskForm").append(str);
+			$(".taskForm").modal();
+			//格式化时间窗
+			$(".dateFormat").datetimepicker({
+		        format: 'yyyy-mm-dd',
+		        minView:'month',
+		        language: 'zh-CN',
+		        autoclose:true,
+		        startDate:new Date()
+		    });
 		})
-	}
-	
-	function jump(){
-		window.location.href="/model/model.html";
 	}
 </script>
 </html>
