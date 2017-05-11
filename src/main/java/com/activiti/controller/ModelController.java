@@ -12,13 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
-
-
 import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
@@ -42,7 +39,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vaadin.terminal.StreamResource.StreamSource;
-
 
 @RestController
 @RequestMapping("/model")
@@ -252,5 +248,4 @@ public class ModelController implements ModelDataJsonConstants {
 		}
 	}
 
-	
 }

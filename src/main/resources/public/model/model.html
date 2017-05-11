@@ -19,7 +19,24 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-2" style="float:right;">
+				<div class="col-md-8" style="float: right;">
+					<form class="form-horizontal" id="deployForm"
+						enctype="multipart/form-data" action="/deploy/deployFile"
+						method="post">
+						<div class="form-group">
+							<label for="file" class="col-sm-2 control-label">模型文件</label>
+							<div class="col-sm-10">
+								<input type="file" class="form-control" id="file" name="file"
+									placeholder="file">
+							</div>
+						</div>
+						<input type="submit" class="btn btn-default" value="部署" />
+					</form>
+
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2" style="float: right;">
 					<!-- Button trigger modal -->
 					<button type="button" class="btn btn-primary btn-lg"
 						onclick="jump()">进入流程定义</button>
@@ -137,10 +154,7 @@ function deleteModel(){
 		//})
 	}
 	function exportModel(){
-		$.get("/model/export?modelId="+modelId,null,function(data){
-			
-		
-		})
+		window.location.href="/model/export?modelId="+modelId;
 	}
 	function jump(){
 		window.location.href="/process/processes.html";

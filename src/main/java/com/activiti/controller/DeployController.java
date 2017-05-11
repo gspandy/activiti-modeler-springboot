@@ -1,13 +1,13 @@
 package com.activiti.controller;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,21 +17,24 @@ import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vaadin.terminal.StreamResource.StreamSource;
 
-@RestController
+@Controller
 @RequestMapping("/deploy")
 public class DeployController implements ModelDataJsonConstants {
 
@@ -44,6 +47,7 @@ public class DeployController implements ModelDataJsonConstants {
 	 * 根据model id部署
 	 */
 	@RequestMapping("/deploy")
+	@ResponseBody
 	public Object deploy(String modelId) {
 		try {
 			Model modelData = repositoryService.getModel(modelId);
@@ -63,7 +67,27 @@ public class DeployController implements ModelDataJsonConstants {
 		return null;
 	}
 
+	/**
+	 * 根据外置流程部署
+	 * 
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/deployFile", method = RequestMethod.POST)
+	public Object deployFile(@RequestParam("file") MultipartFile file) throws IOException {
+		System.out.println(file.getOriginalFilename() + "=======deployment.getId==========================");
+		String name = file.getOriginalFilename();
+		DeploymentBuilder deploymentBuilder = repositoryService.createDeployment();
+		if (name.endsWith(".zip")) {
+			ZipInputStream zipInputStream = new ZipInputStream(file.getInputStream());
+			deploymentBuilder.addZipInputStream(zipInputStream).deploy();
+		} else if (name.endsWith(".xml")) {
+			deploymentBuilder.name(name).addInputStream(name, file.getInputStream()).deploy();
+		}
+		return "redirect:/process/processes.html";
+	}
+
 	@RequestMapping("/list")
+	@ResponseBody
 	public Object getDeploy() {
 		List<ProcessDefinition> list2 = this.repositoryService.createProcessDefinitionQuery().list();
 		StringBuffer sb = new StringBuffer();
@@ -86,12 +110,14 @@ public class DeployController implements ModelDataJsonConstants {
 	}
 
 	@RequestMapping("/delete/{deploymentId}")
+	@ResponseBody
 	public Object deleteDeploy(@PathVariable String deploymentId) {
 		this.repositoryService.deleteDeployment(deploymentId, true);
 		return true;
 	}
 
 	@RequestMapping("/showDeploySource")
+	@ResponseBody
 	public Object showDeploySource(String deploymentId, String resourceName, HttpServletResponse response) {
 		InputStream is = this.repositoryService.getResourceAsStream(deploymentId, resourceName);
 		Reader reader = new InputStreamReader(is);
@@ -112,6 +138,7 @@ public class DeployController implements ModelDataJsonConstants {
 	}
 
 	@RequestMapping("/showDeploySourceByProcess")
+	@ResponseBody
 	public Object showDeploySourceByProcess(String pdid, String resourceName, HttpServletResponse response)
 			throws Exception {
 		ProcessDefinition pd = this.repositoryService.createProcessDefinitionQuery().processDefinitionId(pdid)
@@ -126,6 +153,7 @@ public class DeployController implements ModelDataJsonConstants {
 	}
 
 	@RequestMapping("/showImage")
+	@ResponseBody
 	public Object showImage(String deploymentId, String diagramResourceName, HttpServletResponse response) {
 		InputStream is = this.repositoryService.getResourceAsStream(deploymentId, diagramResourceName);
 		response.setContentType("application/x-msdownload;charset=UTF-8");
