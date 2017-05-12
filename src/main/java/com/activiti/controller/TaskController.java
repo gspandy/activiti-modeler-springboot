@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.activiti.model.User;
@@ -51,8 +52,7 @@ public class TaskController implements ModelDataJsonConstants {
 			Task m = list.get(i);
 			sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
 					.append("\",\"processInstanceId\":\"" + m.getProcessInstanceId())
-					.append("\",\"createTime\":\"" + m.getCreateTime())
-			.append("\",\"assignee\":\"" + m.getAssignee());
+					.append("\",\"createTime\":\"" + m.getCreateTime()).append("\",\"assignee\":\"" + m.getAssignee());
 			sb.append("\"}");
 			if (i < list.size() - 1) {
 				sb.append(",");
@@ -66,37 +66,54 @@ public class TaskController implements ModelDataJsonConstants {
 	@ResponseBody
 	public Object getForm(String taskId) {
 		TaskFormData taskFormData = this.formService.getTaskFormData(taskId);
-		
+		String formKey = taskFormData.getFormKey();
+		if (!"".equals(formKey)) {
+			Object taskForm = this.formService.getRenderedTaskForm(taskId);
+			return taskForm;
+		}
 		List<FormProperty> list = taskFormData.getFormProperties();
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
 		for (int i = 0; i < list.size(); i++) {
 			FormProperty m = list.get(i);
 			sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
-					.append("\",\"value\":\"" + m.getValue())
-					.append("\",\"type\":\"" + m.getType().getName());
+					.append("\",\"value\":\"" + m.getValue()).append("\",\"type\":\"" + m.getType().getName())
+					.append("\",\"information\":\"" + m.getType().getInformation("values"))
+					.append("\",\"readable\":\"" + m.isReadable()).append("\",\"writable\":\"" + m.isWritable());
 			sb.append("\"}");
 			if (i < list.size() - 1) {
 				sb.append(",");
 			}
+			System.out.println(m.getType().getInformation("values"));
 		}
 		sb.append("]");
 		return sb.toString();
 	}
 
-	@RequestMapping("/complete")
-	@ResponseBody
+	@RequestMapping(value = "/complete", method = RequestMethod.POST)
 	public Object completeTask(String taskId, HttpServletRequest request) {
 		TaskFormData taskFormData = formService.getTaskFormData(taskId);
-		List<FormProperty> list = taskFormData.getFormProperties();
 		Map<String, String> map = new HashMap<>();
-		for (FormProperty f : list) {
-			if (f.isWritable()) {
-				String value = request.getParameter(f.getName());
-				map.put(f.getId(), value);
+		String formKey = taskFormData.getFormKey();
+		if (!"".equals(formKey)) {
+			Map<String, String[]> parameMap = request.getParameterMap();
+			parameMap.forEach((m, n) -> {
+				if (m.startsWith("fp_")) {
+					map.put(m.split("_")[1], n[0]);
+				}
+			});
+
+		} else {
+			List<FormProperty> list = taskFormData.getFormProperties();
+			for (FormProperty f : list) {
+				if (f.isWritable()) {
+					String value = request.getParameter(f.getId());
+					map.put(f.getId(), value);
+				}
 			}
 		}
+
 		formService.submitTaskFormData(taskId, map);
-		return "OK";
+		return "redirect:/home.html";
 	}
 }

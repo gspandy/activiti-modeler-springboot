@@ -57,7 +57,6 @@ public class DeployController implements ModelDataJsonConstants {
 			BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
 			bpmnBytes = new BpmnXMLConverter().convertToXML(model);
 			String processName = modelData.getName() + ".bpmn20.xml";
-			System.out.println(modelData.getName() + "======================");
 			Deployment deployment = repositoryService.createDeployment().name(modelData.getName())
 					.addString(processName, new String(bpmnBytes, "utf-8")).deploy();
 			return deployment;
@@ -74,12 +73,12 @@ public class DeployController implements ModelDataJsonConstants {
 	 */
 	@RequestMapping(value = "/deployFile", method = RequestMethod.POST)
 	public Object deployFile(@RequestParam("file") MultipartFile file) throws IOException {
-		System.out.println(file.getOriginalFilename() + "=======deployment.getId==========================");
 		String name = file.getOriginalFilename();
 		DeploymentBuilder deploymentBuilder = repositoryService.createDeployment();
 		if (name.endsWith(".zip")) {
 			ZipInputStream zipInputStream = new ZipInputStream(file.getInputStream());
-			deploymentBuilder.addZipInputStream(zipInputStream).deploy();
+			deploymentBuilder.addZipInputStream(zipInputStream)
+			.deploy();
 		} else if (name.endsWith(".xml")) {
 			deploymentBuilder.name(name).addInputStream(name, file.getInputStream()).deploy();
 		}

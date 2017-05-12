@@ -17,7 +17,7 @@
 		<div class="container">
 			<table class="table table-striped table-bordered">
 				<thead id="processroot">
-					
+
 				</thead>
 			</table>
 		</div>
@@ -35,7 +35,7 @@
 					<h4 class="modal-title" id="myModalLabel">流程定义图片</h4>
 				</div>
 				<div class="modal-body">
-					<div id="image"></div>
+					<div id="processimage"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -55,8 +55,8 @@
 					</button>
 					<h4 class="modal-title">流程动态表单</h4>
 				</div>
-				<form class="form-horizontal" id="processForm" action="/process/start"
-					method="post"></form>
+				<form class="form-horizontal" id="processForm"
+					action="/process/start" method="post"></form>
 
 			</div>
 		</div>
@@ -78,9 +78,9 @@
 	}
 	
 	function showImage(deploymentId,diagramResourceName){
-		$("#image").empty();
+		$("#processimage").empty();
 		var str="<img src=/deploy/showImage?deploymentId="+deploymentId+"&diagramResourceName="+diagramResourceName+" ></img>";
-			$("#image").append(str);
+			$("#processimage").append(str);
 			$("#myModal").modal();
 		}
 	function deleteDeployment(deploymentId){
@@ -91,18 +91,23 @@
 	//获取表单数据
 	function getForm(processDefinitionId){
 		$.get("/process/getForm?processDefinitionId="+processDefinitionId,null,function(result){
-			result=JSON.parse(result);
 			console.log(result);
-			var str='';
-			result.map((item)=>{
-				var dateFormat="dateFormat";
-				if(item.type!="date"){
-					dateFormat="nodateFormat";
-				}
-				str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
-			})
-			str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
-			str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
+			if(result.indexOf("[")!=0){
+				str=result;
+			}else{
+				result=JSON.parse(result);
+				var str='';
+				result.map((item)=>{
+					var dateFormat="dateFormat";
+					if(item.type!="date"){
+						dateFormat="nodateFormat";
+					}
+					str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
+				})
+				
+			}
+				str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
+				str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
 			$("#processForm").empty();
 			$("#processForm").append(str);
 			$(".processForm").modal();
@@ -115,8 +120,6 @@
 		        startDate:new Date()
 		    });
 		})
-	}
-	function startProcess(processDefinitionId){
 	}
 </script>
 </html>
