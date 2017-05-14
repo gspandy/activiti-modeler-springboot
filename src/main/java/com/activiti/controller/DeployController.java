@@ -58,7 +58,10 @@ public class DeployController implements ModelDataJsonConstants {
 			bpmnBytes = new BpmnXMLConverter().convertToXML(model);
 			String processName = modelData.getName() + ".bpmn20.xml";
 			Deployment deployment = repositoryService.createDeployment().name(modelData.getName())
-					.addString(processName, new String(bpmnBytes, "utf-8")).deploy();
+					.addString(processName, new String(bpmnBytes, "utf-8"))
+					.addClasspathResource("public/form/start.form")
+					.addClasspathResource("public/form/leader.form")
+					.deploy();
 			return deployment;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.engine.FormService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.activiti.model.User;
+import com.activiti.model.ViewFormData;
 
 @Controller
 @RequestMapping("/task")
@@ -34,6 +36,14 @@ public class TaskController implements ModelDataJsonConstants {
 	@Autowired
 	private FormService formService;
 
+	@RequestMapping("/getClaim")
+	@ResponseBody
+	public Object getClaim(String taskId, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		this.taskService.claim(taskId, user.getUserId());
+		return "OK";
+	}
+
 	// 查询所有任务根据登录人
 	@RequestMapping("/getAllTask")
 	@ResponseBody
@@ -45,7 +55,12 @@ public class TaskController implements ModelDataJsonConstants {
 		list.addAll(doingTasks);
 		list.addAll(waitingClaimTasks);
 		// 可以使用下面一句代替
-		// list=this.taskService.createTaskQuery().taskCandidateOrAssigned(user.getUserId()).list();
+		// List<Task> list2 =
+		// this.taskService.createTaskQuery().taskCandidateOrAssigned(user.getUserId()).list();
+		// for (Task t : list2) {
+		// System.out.println(t.getAssignee());
+		// System.out.println(t.getName());
+		// }
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
 		for (int i = 0; i < list.size(); i++) {
@@ -67,27 +82,33 @@ public class TaskController implements ModelDataJsonConstants {
 	public Object getForm(String taskId) {
 		TaskFormData taskFormData = this.formService.getTaskFormData(taskId);
 		String formKey = taskFormData.getFormKey();
-		if (!"".equals(formKey)) {
-			Object taskForm = this.formService.getRenderedTaskForm(taskId);
-			return taskForm;
-		}
-		List<FormProperty> list = taskFormData.getFormProperties();
-		StringBuffer sb = new StringBuffer();
-		sb.append("[");
-		for (int i = 0; i < list.size(); i++) {
-			FormProperty m = list.get(i);
-			sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
-					.append("\",\"value\":\"" + m.getValue()).append("\",\"type\":\"" + m.getType().getName())
-					.append("\",\"information\":\"" + m.getType().getInformation("values"))
-					.append("\",\"readable\":\"" + m.isReadable()).append("\",\"writable\":\"" + m.isWritable());
-			sb.append("\"}");
-			if (i < list.size() - 1) {
-				sb.append(",");
+		if (!("".equals(formKey) || formKey == null)) {
+			String taskForm = null;
+			if (formKey.endsWith(".form")) {
+				taskForm = this.formService.getRenderedTaskForm(taskId).toString();
 			}
-			System.out.println(m.getType().getInformation("values"));
+			return new ViewFormData(formKey,taskForm);
+		} else {
+			List<FormProperty> list = taskFormData.getFormProperties();
+			StringBuffer sb = new StringBuffer();
+			sb.append("[");
+			for (int i = 0; i < list.size(); i++) {
+				FormProperty m = list.get(i);
+				System.out.println(m.getValue());
+				sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
+						.append("\",\"value\":\"" + m.getValue()).append("\",\"type\":\"" + m.getType().getName())
+						.append("\",\"information\":\"" + m.getType().getInformation("values"))
+						.append("\",\"readable\":\"" + m.isReadable()).append("\",\"writable\":\"" + m.isWritable());
+				sb.append("\"}");
+				if (i < list.size() - 1) {
+					sb.append(",");
+				}
+				System.out.println(m.getType().getInformation("values"));
+			}
+			sb.append("]");
+			return sb.toString();
 		}
-		sb.append("]");
-		return sb.toString();
+
 	}
 
 	@RequestMapping(value = "/complete", method = RequestMethod.POST)
@@ -95,7 +116,7 @@ public class TaskController implements ModelDataJsonConstants {
 		TaskFormData taskFormData = formService.getTaskFormData(taskId);
 		Map<String, String> map = new HashMap<>();
 		String formKey = taskFormData.getFormKey();
-		if (!"".equals(formKey)) {
+		if (!("".equals(formKey) || formKey == null)) {
 			Map<String, String[]> parameMap = request.getParameterMap();
 			parameMap.forEach((m, n) -> {
 				if (m.startsWith("fp_")) {
@@ -112,7 +133,6 @@ public class TaskController implements ModelDataJsonConstants {
 				}
 			}
 		}
-
 		formService.submitTaskFormData(taskId, map);
 		return "redirect:/home.html";
 	}

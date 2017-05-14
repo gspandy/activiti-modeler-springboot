@@ -7,49 +7,48 @@
 <link rel="stylesheet" href="bootstrap/bootstrap-datetimepicker.min.css" />
 <script type="text/javascript" src="bootstrap/jquery.js"></script>
 <script type="text/javascript" src="bootstrap/bootstrap.min.js"></script>
-<script type="text/javascript" src="bootstrap/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript" src="bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript"
+	src="bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript"
+	src="bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
 </head>
 <body>
-	<div class="container">
-		<div class="row"></div>
-		<div class="row">
-			<div class="col-md-12">
-				<div>
-					<!-- Nav tabs -->
-					<ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" class="active"><a href="#model"
-							class="jump" aria-controls="home" role="tab" data-toggle="tab">模型管理</a></li>
-						<li role="presentation"><a href="#process" class="jump"
-							aria-controls="profile" role="tab" data-toggle="tab">流程定义</a></li>
-						<li role="presentation"><a href="#task" class="jump"
-							aria-controls="messages" role="tab" data-toggle="tab">任务管理</a></li>
-						<li role="presentation"><a href="#" id="myTabDrop1"
-							class="dropdown-toggle" data-toggle="dropdown">操&nbsp;&nbsp;&nbsp;&nbsp;作
-								<b class="caret"></b>
-						</a>
-							<ul class="dropdown-menu" role="menu"
-								aria-labelledby="myTabDrop1">
-								<li><a href="#jmeter" tabindex="-1" data-toggle="tab">个人信息</a></li>
-								<li><a class="jump" href="#logout" tabindex="-1"
-									data-toggle="tab">退出登录</a></li>
-							</ul></li>
+	<header class="container">
+		<div class="row" style="font-size:18px;background-color: rgba(154, 199, 188, 0.76);">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active" ><a href="#model"
+					class="jump" aria-controls="home" role="tab" data-toggle="tab">模型管理</a></li>
+				<li role="presentation"><a href="#process" class="jump"
+					aria-controls="profile" role="tab" data-toggle="tab">流程定义</a></li>
+				<li role="presentation"><a href="#task" class="jump"
+					aria-controls="messages" role="tab" data-toggle="tab">任务管理</a></li>
+				<li style="float: right" role="presentation"><a href="#"
+					id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">操&nbsp;&nbsp;&nbsp;&nbsp;作
+						<b class="caret"></b>
+				</a>
+					<ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+						<li><a href="#jmeter" tabindex="-1" data-toggle="tab">个人信息</a></li>
+						<li><a class="jump" href="#logout" tabindex="-1"
+							data-toggle="tab">退出登录</a></li>
 					</ul>
-
-					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane active" id="model"></div>
-						<div role="tabpanel" class="tab-pane" id="process"></div>
-						<div role="tabpanel" class="tab-pane" id="task"></div>
-						<div role="tabpanel" class="tab-pane" id="settings"></div>
-					</div>
-
-				</div>
-			</div>
+				</li>
+				<li style="float: right" role="presentation"><a href="#task" class="jump"
+					aria-controls="messages" role="tab" data-toggle="tab"><span id="user"  ></span></a></li>
+			</ul>
 		</div>
+	</header>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="model"></div>
+		<div role="tabpanel" class="tab-pane" id="process"></div>
+		<div role="tabpanel" class="tab-pane" id="task"></div>
+		<div role="tabpanel" class="tab-pane" id="settings"></div>
 	</div>
+	<footer>alsjdfldfj</footer>
 </body>
 <script type="text/javascript">
 	$(function() {
+		getSession();
 		$("#model").load("/model/model.html");
 		$(".jump").click(function() {
 			console.log(this.href)
@@ -72,5 +71,10 @@
 			}
 		})
 	})
+	function getSession() {
+		$.get("/login/getSession", null, function(result) {
+			$("#user").html("欢迎你: "+result.userName);
+		})
+	}
 </script>
 </html>

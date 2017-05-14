@@ -11,6 +11,7 @@ import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.engine.FormService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.activiti.model.User;
+import com.activiti.model.ViewFormData;
 
 @Controller
 @RequestMapping("/process")
@@ -36,6 +38,8 @@ public class ProcessController implements ModelDataJsonConstants {
 	private IdentityService identityService;
 	@Autowired
 	private RepositoryService repositoryService;
+	@Autowired
+	private RuntimeService runtimeService;
 
 	/**
 	 * 开启流程
@@ -44,8 +48,8 @@ public class ProcessController implements ModelDataJsonConstants {
 	public Object start(String processDefinitionId, HttpServletRequest request) {
 		StartFormData formData = formService.getStartFormData(processDefinitionId);
 		String formKey = formData.getFormKey();
-		Map<String, String> map = new HashMap<>();
-		if (!"".equals(formKey)) {
+		Map<String, Object> map = new HashMap<>();
+		if (!("".equals(formKey) || formKey == null)) {
 			Map<String, String[]> parameterMap = request.getParameterMap();
 			parameterMap.forEach((m, n) -> {
 				if (m.startsWith("fp_")) {
@@ -59,10 +63,12 @@ public class ProcessController implements ModelDataJsonConstants {
 				map.put(m.getId(), value);
 			});
 		}
-
 		User user = (User) request.getSession().getAttribute("user");
+		ProcessInstance processInstance = this.runtimeService.startProcessInstanceById(processDefinitionId, map);
+
 		identityService.setAuthenticatedUserId(user.getUserId());
-		ProcessInstance processInstance = formService.submitStartFormData(processDefinitionId, map);
+		// ProcessInstance processInstance =
+		// formService.submitStartFormData(processDefinitionId, map);
 		System.out.println(processInstance.getId() + "====processInstance.getId=========");
 		return "redirect:/home.html";
 	}
@@ -79,8 +85,12 @@ public class ProcessController implements ModelDataJsonConstants {
 				.processDefinitionId(processDefinitionId).singleResult();
 		boolean hasStartFormKey = processDefinition.hasStartFormKey();
 		if (hasStartFormKey) {
-			Object renderedStartForm = formService.getRenderedStartForm(processDefinitionId);
-			return renderedStartForm;
+			String startFormKey = formService.getStartFormKey(processDefinitionId);
+			String renderedStartForm = null;
+			if (startFormKey.endsWith(".form")) {
+				 renderedStartForm = formService.getRenderedStartForm(processDefinitionId).toString();
+			}
+			return new ViewFormData(startFormKey,renderedStartForm);
 		} else {
 			StartFormData startFormData = this.formService.getStartFormData(processDefinitionId);
 			List<FormProperty> list = startFormData.getFormProperties();

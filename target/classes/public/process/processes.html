@@ -2,80 +2,140 @@
 <html>
 <head>
 <meta charset="utf-8">
-<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="../bootstrap/bootstrap-theme.css" />
-<link rel="stylesheet" href="../bootstrap/bootstrap.min.css" />
-<script type="text/javascript" src="../bootstrap/jquery.js"></script>
-<script type="text/javascript" src="../bootstrap/bootstrap.min.js"></script>
 
 
 </head>
 <body>
-	<div class="container-fluid">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-4 col-md-offset-4">
-					<h1>流程部署管理</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+				<h1>流程部署管理</h1>
+			</div>
+		</div>
+		<div class="row">
+			<table class="table table-striped table-bordered">
+				<thead id="processroot">
+
+				</thead>
+			</table>
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">流程定义图片</h4>
+				</div>
+				<div class="modal-body">
+					<div id="processimage"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
 				</div>
 			</div>
 		</div>
-		<div class="container">
-			<table class="table table-striped table-bordered">
-				<thead id="root">
-					<tr>
-						<td>流程定义ID</td>
-						<td>流程部署ID</td>
-						<td>流程定义名称</td>
-						<td>流程定义KEY</td>
-						<td>版本号</td>
-						<td>XML资源名称</td>
-						<td>图片资源名称</td>
-						<td>操作</td>
-					</tr>
-				</thead>
-			</table>
-			<div id="image"></div>
-			<div id="source"></div>
+	</div>
+	<!-- 增加模态框 -->
+	<div class="modal fade processForm" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">流程动态表单</h4>
+				</div>
+				<form class="form-horizontal" id="processForm"
+					action="/process/start" method="post"></form>
+
+			</div>
 		</div>
 	</div>
-</body>
-<script type="text/javascript">
+	<script type="text/javascript">
 	$(function() {
 		getAllModel();
 	});
 	function getAllModel() {
 		$.get("/deploy/list", null, function(data) {
 			data = JSON.parse(data);
-			console.log(data)
-			var str;
+			$("#processroot").empty();
+			var str="<tr> <td>流程定义ID</td> <td>流程部署ID</td> <td>流程定义名称</td> <td>流程定义KEY</td> <td>版本号</td> <td>XML资源名称</td> <td>图片资源名称</td> <td>操作</td> </tr>";
 			data.map((item)=>{
-				str+='<tr> <td>'+item.id+'</td><td>'+item.deploymentId+'</td> <td>'+item.name+'</td> <td>'+item.key+'</td> <td>'+item.version+'</td> <td><a href= "#" onclick="showResource(\''+item.deploymentId+'\',\''+item.resourceName+'\')">'+item.resourceName+'</a></td> <td><a href= "#" onclick="showImage(\''+item.deploymentId+'\',\''+item.diagramResourceName+'\')">'+item.diagramResourceName+'</a></td> <td><button onclick="deleteDeployment('+item.deploymentId+')" class="btn btn-primary">删除</button>&nbsp;<button onclick="startProcess('+item.id+')" class="btn btn-primary">启动</button></td> </tr>'
+				str+='<tr> <td>'+item.id+'</td><td>'+item.deploymentId+'</td> <td>'+item.name+'</td> <td>'+item.key+'</td> <td>'+item.version+'</td> <td><a target="_blank" href= "/deploy/showDeploySourceByProcess?pdid='+item.id+'&resourceName='+item.resourceName+'">'+item.resourceName+'</a></td> <td><a href= "#" onclick="showImage(\''+item.deploymentId+'\',\''+item.diagramResourceName+'\')">'+item.diagramResourceName+'</a></td> <td><button onclick="deleteDeployment('+item.deploymentId+')" class="btn btn-primary">删除</button>&nbsp;<button onclick="getForm(\''+item.id+'\')" class="btn btn-primary">启动</button></td> </tr>'
 			});
-			$("#root").append(str);
+			$("#processroot").append(str);
 		})
 	}
-	function showResource(deploymentId,resourceName){
-		
-	$.get("/deploy/showDeploySource",{deploymentId:deploymentId,resourceName:resourceName},function(result){
-			console.log(result);
-			$("#source").append(result)
-			 })}
+	
 	function showImage(deploymentId,diagramResourceName){
-		$("#image").empty();
+		$("#processimage").empty();
 		var str="<img src=/deploy/showImage?deploymentId="+deploymentId+"&diagramResourceName="+diagramResourceName+" ></img>";
-		$("#image").append(str);
-// 		$.get("/deploy/showImage",{deploymentId:deploymentId,diagramResourceName:diagramResourceName},function(result){
-// 				console.log(result)
-// 			})
+			$("#processimage").append(str);
+			$("#myModal").modal();
 		}
 	function deleteDeployment(deploymentId){
-		
-// 		$.get("/deploy/delete/"+deploymentId,null,function(result){
-// 			getAllModel();
-// 		})
+		$.get("/deploy/delete/"+deploymentId,null,function(result){
+			getAllModel();
+		})
 	}
-	function startProcess(id){
-		$.get("/process/start/"+processDefinitionId,null,function(result){
+	//获取表单数据
+	function getForm(processDefinitionId){
+		$.get("/process/getForm?processDefinitionId="+processDefinitionId,null,function(result){
+			var str='';
+			$("#processForm").empty();
+			if(result.formKey.indexOf(".form")>=0){
+				if(result.form.indexOf("[")!=0){
+					//外置表单
+					str=result.form;
+				}else{
+					//动态表单
+					
+					result.form.map((item)=>{
+						var dateFormat="dateFormat";
+						if(item.type!="date"){
+							dateFormat="nodateFormat";
+						}
+						str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
+					})
+				}
+				str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
+				str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
+				$("#processForm").append(str);
+				$(".processForm").modal();
+				//格式化时间窗
+				$(".dateFormat").datetimepicker({
+			        format: 'yyyy-mm-dd',
+			        minView:'month',
+			        language: 'zh-CN',
+			        autoclose:true,
+			        startDate:new Date()
+			    });
+			}else{
+				//普通表单
+				$("#processForm").load(result.formKey,function(){
+					loadData(processDefinitionId);
+					str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
+					str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
+					$("#processForm").append(str);
+					$(".processForm").modal();
+					//格式化时间窗
+					$(".dateFormat").datetimepicker({
+				        format: 'yyyy-mm-dd',
+				        minView:'month',
+				        language: 'zh-CN',
+				        autoclose:true,
+				        startDate:new Date()
+				    });
+				});
+			}
 			
 		})
 	}

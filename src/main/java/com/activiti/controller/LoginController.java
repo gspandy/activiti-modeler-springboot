@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.activiti.model.User;
 
@@ -46,5 +47,15 @@ public class LoginController implements ModelDataJsonConstants {
 		session.setMaxInactiveInterval(0);
 		session.invalidate();
 		return "redirect:/index.html";
+	}
+
+	/**
+	 * 根据model id部署
+	 */
+	@RequestMapping(value = "/getSession")
+	@ResponseBody
+	public Object getSession(HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		return user;
 	}
 }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+	<div class="form-group">
+		<label for="name" class="col-sm-4 control-label">开始时间:</label>
+		<div class="col-sm-5">
+			<input type="text" value="" class="form-control dateFormat"
+				id="startDate" name="startDate">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="name" class="col-sm-4 control-label">结束时间:</label>
+		<div class="col-sm-5">
+			<input type="text" value="" class="form-control dateFormat "
+				id="endDate" name="endDate">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="name" class="col-sm-4 control-label">原因:</label>
+		<div class="col-sm-5">
+			<input type="text" value="" class="form-control" id="reason"
+				name="reason">
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	//此方法只能获取地址栏信息
+	// 	$(function() {
+	// 		alert(processDefinitionId)
+	// 		if (processDefinitionId == "") {
+	// 			//不置灰字段
+	// 		} else {
+	// 			//根据processDefinitionId 去相应表中查询数据放入字段并且置灰字段
+	// 		}
+	// 	})
+	//html 不知道如何获取数据 目前只能使用回调方法与普通表单耦合了
+	//若使用jsp使用小脚本就可以获取不需要耦合
+	function loadData(processDefinitionId) {
+		if (processDefinitionId == "") {
+			//不置灰字段
+		} else {
+			//根据processDefinitionId 去相应表中查询数据放入字段并且置灰字段
+		}
+	}
+</script>
+</html>
