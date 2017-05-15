@@ -66,12 +66,9 @@
 		$.get("/task/getForm?taskId="+taskId,null,function(result){
 			$("#taskForm").empty();
 			var str='';
-			if(result.formKey.indexOf(".form")>=0){
-				if(result.form.indexOf("[")!=0){
-					str=result.form;
-				}else{
-				var str='';
-				result.form.map((item)=>{
+			if(typeof(result)=="string"){
+				result= JSON.parse(result);
+				result.map((item)=>{
 					var dateFormat="dateFormat";
 					var disabled="disabled";
 					if(item.writable=="true"){
@@ -91,40 +88,34 @@
 						console.log(option)
 						str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <select class="form-control " '+disabled+' name="'+item.id+'" id="'+item.id+'"> '+option+' </select></div> </div>';
 					}else{
-					str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" '+disabled+' value="'+item.value+'" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
+						str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" '+disabled+' value="'+item.value+'" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
 					}
 				})
-				}
 				str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary">办理</button> </div>';
 				str+='<input type="hidden" name="taskId" value="'+taskId+'" />';
 				$("#taskForm").append(str);
 				$(".taskForm").modal();
-				//格式化时间窗
-				$(".dateFormat").datetimepicker({
-			        format: 'yyyy-mm-dd',
-			        minView:'month',
-			        language: 'zh-CN',
-			        autoclose:true,
-			        startDate:new Date()
-			    });
+				dataFormet();
 			}else{
-				//普通表单
-				$("#taskForm").load(result.formKey,function(){
-					loadData(taskId);
-					str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" >办理</button> </div>';
+				if(result.formKey.indexOf(".form")>=0){
+					str=result.form;
+					str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary">办理</button> </div>';
 					str+='<input type="hidden" name="taskId" value="'+taskId+'" />';
 					$("#taskForm").append(str);
 					$(".taskForm").modal();
-					//格式化时间窗
-					$(".dateFormat").datetimepicker({
-				        format: 'yyyy-mm-dd',
-				        minView:'month',
-				        language: 'zh-CN',
-				        autoclose:true,
-				        startDate:new Date()
-				    });
-				});
-			}});
-	}
+					dataFormet();
+				}else{
+					//普通表单
+					$("#taskForm").load(result.formKey,function(){
+						loadData(taskId);
+						str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" >办理</button> </div>';
+						str+='<input type="hidden" name="taskId" value="'+taskId+'" />';
+						$("#taskForm").append(str);
+						$(".taskForm").modal();
+						dataFormet();
+					});
+				}
+			}
+	})}
 </script>
 </html>

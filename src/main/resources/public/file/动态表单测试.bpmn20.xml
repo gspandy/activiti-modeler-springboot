@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="process" isExecutable="true">
+    <startEvent id="sid-D53C1675-0298-4E7E-9F84-9C44A139935B" name="开始" activiti:initiator="applyUserId">
+      <extensionElements>
+        <activiti:formProperty id="startDate" name="开始时间" type="date" datePattern="yyyyMM-dd"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <userTask id="sid-7811AB17-599F-4E11-9F4E-DD3285968B32" name="审批节点" activiti:assignee="wxf">
+      <extensionElements>
+        <activiti:formProperty id="startDate" name="开始时间" type="date" expression="${startDate}" datePattern="yyyy-MM-dd" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="apply" name="审批意见" type="enum">
+          <activiti:value id="true" name="同意"></activiti:value>
+          <activiti:value id="false" name="拒绝"></activiti:value>
+        </activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <endEvent id="sid-B969F6E9-DE53-4EE6-905B-6F9458FE8FC0" name="结束"></endEvent>
+    <sequenceFlow id="sid-F405C480-AAF0-4E9C-BC64-7D14D5853AA9" sourceRef="sid-D53C1675-0298-4E7E-9F84-9C44A139935B" targetRef="sid-7811AB17-599F-4E11-9F4E-DD3285968B32"></sequenceFlow>
+    <sequenceFlow id="sid-A1074DCF-B2A0-471A-AA4E-612E026B0D28" sourceRef="sid-7811AB17-599F-4E11-9F4E-DD3285968B32" targetRef="sid-B969F6E9-DE53-4EE6-905B-6F9458FE8FC0"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_process">
+    <bpmndi:BPMNPlane bpmnElement="process" id="BPMNPlane_process">
+      <bpmndi:BPMNShape bpmnElement="sid-D53C1675-0298-4E7E-9F84-9C44A139935B" id="BPMNShape_sid-D53C1675-0298-4E7E-9F84-9C44A139935B">
+        <omgdc:Bounds height="30.0" width="30.0" x="225.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7811AB17-599F-4E11-9F4E-DD3285968B32" id="BPMNShape_sid-7811AB17-599F-4E11-9F4E-DD3285968B32">
+        <omgdc:Bounds height="80.0" width="100.0" x="190.0" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-B969F6E9-DE53-4EE6-905B-6F9458FE8FC0" id="BPMNShape_sid-B969F6E9-DE53-4EE6-905B-6F9458FE8FC0">
+        <omgdc:Bounds height="28.0" width="28.0" x="226.0" y="372.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-A1074DCF-B2A0-471A-AA4E-612E026B0D28" id="BPMNEdge_sid-A1074DCF-B2A0-471A-AA4E-612E026B0D28">
+        <omgdi:waypoint x="240.0" y="238.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="372.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-F405C480-AAF0-4E9C-BC64-7D14D5853AA9" id="BPMNEdge_sid-F405C480-AAF0-4E9C-BC64-7D14D5853AA9">
+        <omgdi:waypoint x="240.0" y="60.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="158.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -91,52 +91,42 @@
 		$.get("/process/getForm?processDefinitionId="+processDefinitionId,null,function(result){
 			var str='';
 			$("#processForm").empty();
-			if(result.formKey.indexOf(".form")>=0){
-				if(result.form.indexOf("[")!=0){
-					//外置表单
-					str=result.form;
-				}else{
-					//动态表单
-					
-					result.form.map((item)=>{
-						var dateFormat="dateFormat";
-						if(item.type!="date"){
-							dateFormat="nodateFormat";
-						}
-						str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
-					})
-				}
+			if(typeof(result)=="string"){
+				//动态表单
+				result = JSON.parse(result);
+				result.map((item)=>{
+					var dateFormat="dateFormat";
+					if(item.type!="date"){
+						dateFormat="nodateFormat";
+					}
+					str+='<div class="form-group"> <label for="name" class="col-sm-4 control-label">'+item.name+'</label> <div class="col-sm-5"> <input type="text" class="form-control '+dateFormat+'" id="'+item.id+'" name="'+item.id+'" placeholder="'+item.name+'"> </div> </div>';
+				})
 				str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
-				str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
+						str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
 				$("#processForm").append(str);
 				$(".processForm").modal();
-				//格式化时间窗
-				$(".dateFormat").datetimepicker({
-			        format: 'yyyy-mm-dd',
-			        minView:'month',
-			        language: 'zh-CN',
-			        autoclose:true,
-			        startDate:new Date()
-			    });
+				dataFormet();
 			}else{
-				//普通表单
-				$("#processForm").load(result.formKey,function(){
-					loadData(processDefinitionId);
+				if(result.formKey.indexOf(".form")>=0){
+					//外置表单
+					str=result.form;
 					str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
 					str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
 					$("#processForm").append(str);
 					$(".processForm").modal();
-					//格式化时间窗
-					$(".dateFormat").datetimepicker({
-				        format: 'yyyy-mm-dd',
-				        minView:'month',
-				        language: 'zh-CN',
-				        autoclose:true,
-				        startDate:new Date()
-				    });
-				});
+					dataFormet();
+				}else{
+					//普通表单
+					$("#processForm").load(result.formKey,function(){
+						loadData(processDefinitionId);
+						str+='<div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="submit" class="btn btn-primary" onclick="startProcess(\"'+processDefinitionId+'\")" >启动</button> </div>'
+						str+='<input type="hidden"  name="processDefinitionId" value="'+processDefinitionId+'"/>';
+						$("#processForm").append(str);
+						$(".processForm").modal();
+						dataFormet();
+					});
+				}
 			}
-			
 		})
 	}
 </script>
