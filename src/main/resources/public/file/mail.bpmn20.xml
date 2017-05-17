@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="testmail" isExecutable="true" name="测试邮件">
+    <startEvent id="sid-2E6AA714-D870-46D6-B2BD-F169130796CE" name="开始" activiti:initiator="applyuserId">
+      <extensionElements>
+        <activiti:formProperty id="startDate" name="时间" type="date" datePattern="yyyy-MM-dd"></activiti:formProperty>
+        <activiti:formProperty id="to" name="发送到:" type="string"></activiti:formProperty>
+        <activiti:formProperty id="name" name="接受人名称" type="string"></activiti:formProperty>
+        <activiti:formProperty id="from" name="从哪里发:" type="string"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <serviceTask id="sid-A2EE7F5D-5D1D-4ECD-BBC9-7A71DFF0D09C" name="发送邮件" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression>${to}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:expression>${from}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:expression>你好,${name}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="charset">
+          <activiti:string>UTF-8</activiti:string>
+        </activiti:field>
+        <activiti:field name="html">
+          <activiti:expression><![CDATA[<html><body>你好,${name}恭喜你学会发邮件</body></html>]]></activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="sid-8727516E-724A-4587-9F7D-BAD931EFA6B8"></endEvent>
+    <sequenceFlow id="sid-9CE01712-660A-4C50-AC55-DEF179B6F6F4" sourceRef="sid-2E6AA714-D870-46D6-B2BD-F169130796CE" targetRef="sid-A2EE7F5D-5D1D-4ECD-BBC9-7A71DFF0D09C"></sequenceFlow>
+    <sequenceFlow id="sid-2F56E9F2-B850-417B-AA47-8E8875CF3880" sourceRef="sid-A2EE7F5D-5D1D-4ECD-BBC9-7A71DFF0D09C" targetRef="sid-8727516E-724A-4587-9F7D-BAD931EFA6B8"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_process">
+    <bpmndi:BPMNPlane bpmnElement="process" id="BPMNPlane_process">
+      <bpmndi:BPMNShape bpmnElement="sid-2E6AA714-D870-46D6-B2BD-F169130796CE" id="BPMNShape_sid-2E6AA714-D870-46D6-B2BD-F169130796CE">
+        <omgdc:Bounds height="30.0" width="30.0" x="252.75" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-A2EE7F5D-5D1D-4ECD-BBC9-7A71DFF0D09C" id="BPMNShape_sid-A2EE7F5D-5D1D-4ECD-BBC9-7A71DFF0D09C">
+        <omgdc:Bounds height="80.0" width="100.0" x="217.75" y="187.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8727516E-724A-4587-9F7D-BAD931EFA6B8" id="BPMNShape_sid-8727516E-724A-4587-9F7D-BAD931EFA6B8">
+        <omgdc:Bounds height="28.0" width="28.0" x="253.75" y="345.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-2F56E9F2-B850-417B-AA47-8E8875CF3880" id="BPMNEdge_sid-2F56E9F2-B850-417B-AA47-8E8875CF3880">
+        <omgdi:waypoint x="267.75" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="267.75" y="345.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9CE01712-660A-4C50-AC55-DEF179B6F6F4" id="BPMNEdge_sid-9CE01712-660A-4C50-AC55-DEF179B6F6F4">
+        <omgdi:waypoint x="267.75" y="80.0"></omgdi:waypoint>
+        <omgdi:waypoint x="267.75" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

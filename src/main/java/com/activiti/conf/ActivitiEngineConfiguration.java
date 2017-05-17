@@ -30,7 +30,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 public class ActivitiEngineConfiguration {
 
-
 	@Autowired
 	protected Environment environment;
 	@Autowired
@@ -71,10 +70,17 @@ public class ActivitiEngineConfiguration {
 		processEngineConfiguration.setAsyncExecutorActivate(
 				Boolean.valueOf(environment.getProperty("engine.asyncexecutor.activate", "true")));
 		processEngineConfiguration.setHistory(environment.getProperty("engine.history.level", "full"));
-		//支持中文图片
+		// 支持中文图片
 		processEngineConfiguration.setActivityFontName("微软雅黑");
 		processEngineConfiguration.setLabelFontName("微软雅黑");
 
+		// 邮箱
+		processEngineConfiguration.setMailServerHost("smtp.qq.com");
+		processEngineConfiguration.setMailServerPort(465);
+		processEngineConfiguration.setMailServerDefaultFrom("352004760@qq.com");
+		processEngineConfiguration.setMailServerUsername("352004760@qq.com");
+		processEngineConfiguration.setMailServerPassword("*****");
+		processEngineConfiguration.setMailServerUseSSL(true);
 		String mailEnabled = environment.getProperty("engine.email.enabled");
 		if ("true".equals(mailEnabled)) {
 			processEngineConfiguration.setMailServerHost(environment.getProperty("engine.email.host"));

@@ -65,7 +65,6 @@ public class ProcessController implements ModelDataJsonConstants {
 		}
 		User user = (User) request.getSession().getAttribute("user");
 		ProcessInstance processInstance = this.runtimeService.startProcessInstanceById(processDefinitionId, map);
-
 		identityService.setAuthenticatedUserId(user.getUserId());
 		// ProcessInstance processInstance =
 		// formService.submitStartFormData(processDefinitionId, map);
@@ -88,25 +87,35 @@ public class ProcessController implements ModelDataJsonConstants {
 			String startFormKey = formService.getStartFormKey(processDefinitionId);
 			String renderedStartForm = null;
 			if (startFormKey.endsWith(".form")) {
-				 renderedStartForm = formService.getRenderedStartForm(processDefinitionId).toString();
+				renderedStartForm = formService.getRenderedStartForm(processDefinitionId).toString();
 			}
-			return new ViewFormData(startFormKey,renderedStartForm);
+			return new ViewFormData(startFormKey, renderedStartForm);
 		} else {
 			StartFormData startFormData = this.formService.getStartFormData(processDefinitionId);
-			List<FormProperty> list = startFormData.getFormProperties();
-			StringBuffer sb = new StringBuffer();
-			sb.append("[");
-			for (int i = 0; i < list.size(); i++) {
-				FormProperty m = list.get(i);
-				sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
-						.append("\",\"value\":\"" + m.getValue()).append("\",\"type\":\"" + m.getType().getName());
-				sb.append("\"}");
-				if (i < list.size() - 1) {
-					sb.append(",");
+			if (startFormData != null
+					&& ((startFormData.getFormProperties() != null && !startFormData.getFormProperties().isEmpty())
+							|| startFormData.getFormKey() != null)) {
+
+				List<FormProperty> list = startFormData.getFormProperties();
+				StringBuffer sb = new StringBuffer();
+				sb.append("[");
+				for (int i = 0; i < list.size(); i++) {
+					FormProperty m = list.get(i);
+					sb.append("{\"id\":\"" + m.getId() + "\",\"name\":\"" + m.getName())
+							.append("\",\"value\":\"" + m.getValue()).append("\",\"type\":\"" + m.getType().getName());
+					sb.append("\"}");
+					if (i < list.size() - 1) {
+						sb.append(",");
+					}
 				}
+				sb.append("]");
+				return sb.toString();
+			} else {
+				ProcessInstance processInstance = runtimeService.startProcessInstanceById(processDefinition.getId());
+				// Show notification of success
+				System.out.println(processInstance.getId());
+				return "redirect:/home.html";
 			}
-			sb.append("]");
-			return sb.toString();
 		}
 
 	}

@@ -11,20 +11,20 @@
 	src="bootstrap/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript"
 	src="bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
-<script type="text/javascript"
-	src="js/dataFormat.js"></script>
+<script type="text/javascript" src="js/dataFormat.js"></script>
 </head>
 <body>
+	<!-- style="font-size: 18px; background-color: rgba(154, 199, 188, 0.76);" -->
 	<header class="container">
-		<div class="row" style="font-size:18px;background-color: rgba(154, 199, 188, 0.76);">
+		<div class="row" style="font-size: 18px; ">
 			<!-- Nav tabs -->
 			<ul class="nav nav-tabs" role="tablist">
-				<li role="presentation" class="active" ><a href="#model"
+				<li role="presentation" class="active"><a href="#model"
 					class="jump" aria-controls="home" role="tab" data-toggle="tab">模型管理</a></li>
 				<li role="presentation"><a href="#process" class="jump"
-					aria-controls="profile" role="tab" data-toggle="tab">流程定义</a></li>
+					aria-controls="process" role="tab" data-toggle="tab">流程定义</a></li>
 				<li role="presentation"><a href="#task" class="jump"
-					aria-controls="messages" role="tab" data-toggle="tab">任务管理</a></li>
+					aria-controls="task" role="tab" data-toggle="tab">任务管理</a></li>
 				<li style="float: right" role="presentation"><a href="#"
 					id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown">操&nbsp;&nbsp;&nbsp;&nbsp;作
 						<b class="caret"></b>
@@ -33,10 +33,10 @@
 						<li><a href="#jmeter" tabindex="-1" data-toggle="tab">个人信息</a></li>
 						<li><a class="jump" href="#logout" tabindex="-1"
 							data-toggle="tab">退出登录</a></li>
-					</ul>
-				</li>
-				<li style="float: right" role="presentation"><a href="#task" class="jump"
-					aria-controls="messages" role="tab" data-toggle="tab"><span id="user"  ></span></a></li>
+					</ul></li>
+				<li style="float: right" role="presentation"><a href="#task"
+					class="jump" aria-controls="messages" role="tab" data-toggle="tab"><span
+						id="user"></span></a></li>
 			</ul>
 		</div>
 	</header>
@@ -46,7 +46,8 @@
 		<div role="tabpanel" class="tab-pane" id="task"></div>
 		<div role="tabpanel" class="tab-pane" id="settings"></div>
 	</div>
-	<footer>alsjdfldfj</footer>
+	<footer class="navbar-fixed-bottom" style="text-align: center;">this
+		is footer</footer>
 </body>
 <script type="text/javascript">
 	$(function() {
@@ -75,7 +76,7 @@
 	})
 	function getSession() {
 		$.get("/login/getSession", null, function(result) {
-			$("#user").html("欢迎你: "+result.userName);
+			$("#user").html("欢迎你: " + result.userName);
 		})
 	}
 </script>
